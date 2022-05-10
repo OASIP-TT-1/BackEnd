@@ -1,7 +1,7 @@
 package sit.int221.oasipbackend.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import sit.int221.oasipbackend.entities.Eventcategory;
+import sit.int221.oasipbackend.entities.EventCategory;
 
-public interface EventcategoryRepository extends JpaRepository<Eventcategory, String> {
+public interface EventCategoryRepository extends JpaRepository<EventCategory, String> {
 }

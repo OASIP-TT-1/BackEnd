@@ -2,7 +2,7 @@ package sit.int221.oasipbackend.entities;
 
 import javax.persistence.*;
 import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "event")
@@ -20,10 +20,10 @@ public class Event {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "eventCategoryId", nullable = false)
-    private Eventcategory eventCategory;
+    private EventCategory eventCategory;
 
     @Column(name = "eventStartTime", nullable = false)
-    private Instant eventStartTime;
+    private LocalDateTime eventStartTime;
 
     @Column(name = "eventDuration", nullable = false)
     private Integer eventDuration;
@@ -47,20 +47,20 @@ public class Event {
         this.eventDuration = eventDuration;
     }
 
-    public Instant getEventStartTime() {
+    public LocalDateTime getEventStartTime() {
         return eventStartTime;
     }
 
-    public void setEventStartTime(Instant eventStartTime) {
+    public void setEventStartTime(LocalDateTime eventStartTime) {
         this.eventStartTime = eventStartTime;
     }
 
-    public Eventcategory getEventCategory() {
+    public EventCategory getEventCategory() {
         return eventCategory;
     }
 
-    public void setEventCategory(Eventcategory eventCategoryId) {
-        this.eventCategory = eventCategoryId;
+    public void setEventCategory(EventCategory eventCategory) {
+        this.eventCategory = eventCategory;
     }
 
     public String getBookingEmail() {

@@ -6,19 +6,30 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
 @Getter
 @Setter
 public class SimpleEventDTO {
     private Integer id;
     private String bookingName;
-    private Instant eventStartTime;
+    private LocalDateTime eventStartTime;
     private Integer eventDuration;
     @JsonIgnore
     private SimpleEventCategoryDTO eventCategory;
 
     public String getEventCategoryName() {
         return eventCategory.getEventCategoryName();
+    }
+
+    public String getEventStartTime() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                .withLocale(Locale.UK)
+                .withZone(ZoneId.systemDefault());
+        return formatter.format(eventStartTime);
     }
 
 }
