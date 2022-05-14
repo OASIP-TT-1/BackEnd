@@ -3,10 +3,7 @@ package sit.int221.oasipbackend.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import sit.int221.oasipbackend.dtos.EventCreateDTO;
-import sit.int221.oasipbackend.dtos.EventDetailDTO;
-import sit.int221.oasipbackend.dtos.EventRescheduleDTO;
-import sit.int221.oasipbackend.dtos.SimpleEventDTO;
+import sit.int221.oasipbackend.dtos.*;
 import sit.int221.oasipbackend.entities.Event;
 import sit.int221.oasipbackend.services.EventService;
 
@@ -22,6 +19,14 @@ public class EventController {
     @GetMapping("")
     public List<SimpleEventDTO> getAllEvent() {
         return service.getAllEvent();
+    }
+
+    @GetMapping("/page")
+    public EventPageDTO getAllEventPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int pageSize,
+            @RequestParam(defaultValue = "eventStartTime") String sortBy) {
+        return service.getAllEventPage(page,pageSize,sortBy);
     }
 
 //    @GetMapping("")

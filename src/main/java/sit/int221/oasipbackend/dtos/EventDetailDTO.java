@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import sit.int221.oasipbackend.entities.EventCategory;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -23,12 +24,13 @@ public class EventDetailDTO {
     private Integer eventDuration;
     private String eventNote;
     private Integer eventCategoryId;
-    @JsonIgnore
-    private SimpleEventCategoryDTO eventCategory;
+    private EventCategory eventCategory;
 
-    public String getEventCategoryName() {
-        return eventCategory.getEventCategoryName();
-    }
+//    @JsonIgnore
+//    private SimpleEventCategoryDTO eventCategory;
+//    public String getEventCategoryName() {
+//        return eventCategory.getEventCategoryName();
+//    }
 
     public String getEventStartTime() {
         DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)

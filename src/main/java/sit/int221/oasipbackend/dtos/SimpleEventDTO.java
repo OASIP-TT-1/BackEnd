@@ -1,5 +1,6 @@
 package sit.int221.oasipbackend.dtos;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.util.Locale;
 public class SimpleEventDTO {
     private Integer id;
     private String bookingName;
+//    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventStartTime;
     private Integer eventDuration;
     @JsonIgnore
