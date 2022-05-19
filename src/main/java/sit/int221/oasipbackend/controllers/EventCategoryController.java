@@ -3,6 +3,7 @@ package sit.int221.oasipbackend.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import sit.int221.oasipbackend.dtos.EventDetailDTO;
+import sit.int221.oasipbackend.dtos.SimpleEventCategoryDTO;
 import sit.int221.oasipbackend.entities.EventCategory;
 import sit.int221.oasipbackend.services.EventCategoryService;
 import sit.int221.oasipbackend.services.EventService;
@@ -21,10 +22,14 @@ public class EventCategoryController {
         return service.getAllCategory();
     }
 
-//    @GetMapping("/{id}")
-//    public EventCategory getEventById(@PathVariable Integer id) {
-//        return service.getCategoryById(id);
-//    }
+    @GetMapping("/{id}")
+    public EventCategory getEventById(@PathVariable Integer id) {
+        return service.getCategoryById(id);
+    }
 
+    @PutMapping("/{id}")
+    public EventCategory updateCategory(@RequestBody SimpleEventCategoryDTO updateCategory, @PathVariable Integer id) {
+        return service.updateCategory(updateCategory, id);
+    }
 
 }

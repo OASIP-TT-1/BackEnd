@@ -1,6 +1,9 @@
 package sit.int221.oasipbackend.entities;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 

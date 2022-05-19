@@ -7,6 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int221.oasipbackend.dtos.*;
@@ -62,6 +63,7 @@ public class EventService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         id + " Dose not exits!!!"));
 
+
         return modelMapper.map(event, EventDetailDTO.class);
 //        return repository.findById(id)
 //                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -69,15 +71,23 @@ public class EventService {
     }
 
     public Event save(EventCreateDTO newEvent) {
-        if(!validateNullInput(newEvent)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The field is null");
-        }else if(!validateInputLength(newEvent)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Field has the length exceeded the size.");
-        }else if(!validateEmail(newEvent.getBookingEmail())) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Email is invalid");
-        }else if(!validateDateFuture(newEvent.getEventStartTime())) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event Start Time is not in the future");
-        }else if(!validateOverLab(newEvent.getEventStartTime(), newEvent.getEventCategory(), 0)) {
+//        if(!validateNullInput(newEvent)) {
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The field is null");
+//        }else if(!validateInputLength(newEvent)) {
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Field has the length exceeded the size.");
+//        }else if(!validateEmail(newEvent.getBookingEmail())) {
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Email is invalid");
+//        }else if(!validateDateFuture(newEvent.getEventStartTime())) {
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event Start Time is not in the future");
+//        }else if(!validateOverLab(newEvent.getEventStartTime(), newEvent.getEventCategory(), 0)) {
+//            System.out.println();
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "This time have event");
+//        }else {
+//            Event event = modelMapper.map(newEvent, Event.class);
+//            return eventRepository.saveAndFlush(event);
+//        }
+
+        if(!validateOverLab(newEvent.getEventStartTime(), newEvent.getEventCategory(), 0)) {
             System.out.println();
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "This time have event");
         }else {
@@ -155,7 +165,9 @@ public class EventService {
         if(newEvent.getEventNote() == null) {
             condition = newEvent.getBookingName().length() <= 100;
         }else {
-            condition = newEvent.getBookingName().length() <= 100 && newEvent.getEventNote().length() <= 500 ;
+            condition = newEvent.getBookingName().length() <= 100
+                    && newEvent.getBookingEmail().length() <= 100
+                    && newEvent.getEventNote().length() <= 500 ;
         }
         return condition;
     }
