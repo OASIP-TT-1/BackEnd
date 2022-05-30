@@ -8,6 +8,7 @@ import sit.int221.oasipbackend.entities.EventCategory;
 import sit.int221.oasipbackend.services.EventCategoryService;
 import sit.int221.oasipbackend.services.EventService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -28,7 +29,7 @@ public class EventCategoryController {
     }
 
     @PutMapping("/{id}")
-    public EventCategory updateCategory(@RequestBody SimpleEventCategoryDTO updateCategory, @PathVariable Integer id) {
+    public Object updateCategory(@Valid @RequestBody SimpleEventCategoryDTO updateCategory, @PathVariable Integer id) {
         return service.updateCategory(updateCategory, id);
     }
 

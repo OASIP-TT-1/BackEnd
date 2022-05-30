@@ -21,7 +21,7 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
         Map<String, Object> errors = new HashMap<>();
         errors.put("TIMESTAMP", Instant.now());
         errors.put("status", status.value());
-        errors.put("message", "Validate failed");
+        errors.put("message", "Validate failed!");
 
         Map<String, String> errorDetails = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) ->{
@@ -30,6 +30,18 @@ public class ValidationHandler extends ResponseEntityExceptionHandler {
             errorDetails.put(fieldName, message);
         });
 
+        errors.put("errorDetails",errorDetails);
+        return new ResponseEntity<Object>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    public static ResponseEntity<Object> showError(String fieldName, String message) {
+        Map<String, Object> errors = new HashMap<>();
+        errors.put("TIMESTAMP", Instant.now());
+        errors.put("status", HttpStatus.BAD_REQUEST.value());
+        errors.put("message", "Validate failed!");
+
+        Map<String, String> errorDetails = new HashMap<>();
+        errorDetails.put(fieldName, message);
         errors.put("errorDetails",errorDetails);
         return new ResponseEntity<Object>(errors, HttpStatus.BAD_REQUEST);
     }

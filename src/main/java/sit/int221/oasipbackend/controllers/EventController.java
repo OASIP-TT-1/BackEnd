@@ -30,11 +30,6 @@ public class EventController {
         return service.getAllEventPage(page,pageSize,sortBy);
     }
 
-//    @GetMapping("")
-//    public List<Event> getAllEvent() {
-//        return service.getAllEvent();
-//    }
-
     @GetMapping("/{id}")
     public EventDetailDTO getEventById(@PathVariable Integer id) {
         return service.getEventById(id);
@@ -42,15 +37,9 @@ public class EventController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("")
-    public Event addNewEvent(@Valid @RequestBody EventCreateDTO newEvent) {
+    public Object addNewEvent(@Valid @RequestBody EventCreateDTO newEvent) {
         return service.save(newEvent);
     }
-
-//    @ResponseStatus(HttpStatus.CREATED)
-//    @PostMapping("")
-//    public void Event (@RequestBody Event newEvent) {
-//        service.save(newEvent);
-//    }
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
@@ -58,7 +47,7 @@ public class EventController {
     }
 
     @PutMapping("/reschedule/{id}")
-    public Event reschedule(@RequestBody EventRescheduleDTO updateData, @PathVariable Integer id) {
+    public Object reschedule(@Valid @RequestBody EventRescheduleDTO updateData, @PathVariable Integer id) {
         return service.reschedule(updateData, id);
     }
 

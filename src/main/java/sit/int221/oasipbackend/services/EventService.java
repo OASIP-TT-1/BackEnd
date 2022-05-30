@@ -1,18 +1,17 @@
 package sit.int221.oasipbackend.services;
 
-import lombok.Value;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.server.ResponseStatusException;
 import sit.int221.oasipbackend.dtos.*;
 import sit.int221.oasipbackend.entities.Event;
 import sit.int221.oasipbackend.entities.EventCategory;
+import sit.int221.oasipbackend.exceptions.ValidationHandler;
 import sit.int221.oasipbackend.repositories.EventCategoryRepository;
 import sit.int221.oasipbackend.repositories.EventRepository;
 import sit.int221.oasipbackend.utils.ListMapper;
@@ -27,6 +26,7 @@ public class EventService {
     @Autowired
     private EventRepository eventRepository;
 
+
     @Autowired
     private EventCategoryRepository eventCategoryRepository;
 
@@ -35,9 +35,6 @@ public class EventService {
 
     @Autowired
     private ListMapper listMapper;
-
-    private String[] NullFiledList;
-    private String[] OutLengthFiledList;
 
     public List<SimpleEventDTO> getAllEvent() {
         Sort sort = Sort.by("eventStartTime");
@@ -52,55 +49,23 @@ public class EventService {
                 EventPageDTO.class);
     }
 
-//    public List<Event> getAllEvent() {
-//        Sort sort = Sort.by("eventStartTime");
-//        List<Event> eventList = repository.findAll(sort.descending());
-//        return eventList;
-//    }
-
     public EventDetailDTO getEventById(Integer id) {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
                         id + " Dose not exits!!!"));
-
-
         return modelMapper.map(event, EventDetailDTO.class);
-//        return repository.findById(id)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-//                        id + " Dose not exits!!!"));
     }
 
-    public Event save(EventCreateDTO newEvent) {
-//        if(!validateNullInput(newEvent)) {
-//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "The field is null");
-//        }else if(!validateInputLength(newEvent)) {
-//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Field has the length exceeded the size.");
-//        }else if(!validateEmail(newEvent.getBookingEmail())) {
-//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Email is invalid");
-//        }else if(!validateDateFuture(newEvent.getEventStartTime())) {
-//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event Start Time is not in the future");
-//        }else if(!validateOverLab(newEvent.getEventStartTime(), newEvent.getEventCategory(), 0)) {
-//            System.out.println();
-//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "This time have event");
-//        }else {
-//            Event event = modelMapper.map(newEvent, Event.class);
-//            return eventRepository.saveAndFlush(event);
-//        }
-
-        if(!validateOverLab(newEvent.getEventStartTime(), newEvent.getEventCategory(), 0)) {
+    public Object save(EventCreateDTO newEvent) {
+        if(!validateOverLab(newEvent.getEventStartTime(), newEvent.getEventCategory(), newEvent.getEventDuration(), 0)) {
             System.out.println();
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "This time have event");
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Have an appointment during this time");
+            return ValidationHandler.showError("eventStartTime", "Have an appointment during this time");
         }else {
             Event event = modelMapper.map(newEvent, Event.class);
             return eventRepository.saveAndFlush(event);
         }
     }
-
-//    public Event save(EventCreateDTO newEvent) {
-//        Event event = modelMapper.map(newEvent, Event.class);
-//        return repository.saveAndFlush(event);
-//    }
-
 
     public void delete(@PathVariable Integer id) {
         eventRepository.findById(id).orElseThrow(()->
@@ -109,11 +74,10 @@ public class EventService {
         eventRepository.deleteById(id);
     }
 
-    public Event reschedule(EventRescheduleDTO updateData, Integer id) {
-        if (!validateDateFuture(updateData.getEventStartTime())) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Event Start Time is not in the future");
-        }else if (!validateOverLab(updateData.getEventStartTime(), updateData.getEventCategory(), id)) {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "This time have event");
+    public Object reschedule(EventRescheduleDTO updateData, Integer id) {
+        if (!validateOverLab(updateData.getEventStartTime(), updateData.getEventCategory(), updateData.getEventDuration(), id)) {
+//            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY, "Have an appointment during this time");
+            return ValidationHandler.showError("eventStartTime", "Have an appointment during this time");
         }else {
             Event existingEvent = eventRepository.findById(id).orElseThrow(()->
                     new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -184,15 +148,13 @@ public class EventService {
     }
 
     private List<Event> filterEvents = new ArrayList<Event>();
-    private Boolean validateOverLab(LocalDateTime startDTNew, EventCategory category, Integer eventId) {
-        System.out.println(eventId);
-        System.out.println(category.getEventDuration());
+    private Boolean validateOverLab(LocalDateTime startDTNew, EventCategory category, Integer durationNew, Integer eventId) {
         List<Event> events = eventRepository.findAll();
         filterCategory(events, category.getEventCategoryName(), eventId);
         System.out.println(filterEvents);
 
         for (Event event : filterEvents) {
-            if (!checkOverLab(startDTNew,event.getEventStartTime(), category.getEventDuration())) {
+            if (!checkOverLab(startDTNew,event.getEventStartTime(), durationNew, event.getEventDuration())) {
                 System.out.println("false ซ้อน");
                 return false;
             }
@@ -204,7 +166,6 @@ public class EventService {
     }
 
     private void filterCategory(List<Event> events, String categoryName, Integer eventId) {
-//        System.out.println(events);
         System.out.println(eventId);
         System.out.println(categoryName);
         for (Event event : events) {
@@ -218,16 +179,14 @@ public class EventService {
     }
 
 
-    private static Boolean checkOverLab(LocalDateTime startDTNew, LocalDateTime startDTOld, Integer duration) {
-        LocalDateTime endDTOld = startDTOld.plusMinutes(duration);
-        LocalDateTime startDanger = startDTOld.minusMinutes(duration);
+    private static Boolean checkOverLab(LocalDateTime startDTNew, LocalDateTime startDTOld, Integer durationNew, Integer durationOld) {
+        LocalDateTime endDTOld = startDTOld.plusMinutes(durationOld);
+        LocalDateTime startDanger = startDTOld.minusMinutes(durationNew);
 
         if(startDTNew.isAfter(endDTOld) && !startDTNew.isEqual(endDTOld)) {
-//            System.out.println("true ไม่ซ้อน อันเเรก");
             return true;
         }else {
             if(startDTNew.isBefore(startDanger) && !startDTNew.isEqual(startDanger)) {
-//                System.out.println("true ไม่ซ้อน อันสอง");
                 return true;
             }
         }

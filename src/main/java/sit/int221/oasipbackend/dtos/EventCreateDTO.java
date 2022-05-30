@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventCreateDTO {
-
     @NotBlank(message = "Booking name must not be blank")
     @Size(max = 100, message = "Booking name size must not be more than 100")
     private String bookingName;
@@ -33,7 +32,9 @@ public class EventCreateDTO {
     @JsonFormat(pattern="dd/MM/yyyy, HH:mm:ss")
     private LocalDateTime eventStartTime;
 
-    @NotNull(message = "Duration must not be null")
+    @Min(1)
+    @Max(480)
+    @NotNull(message = "Duration must not be blank")
     private Integer eventDuration;
 
     @NotNull(message = "Category must not be null")

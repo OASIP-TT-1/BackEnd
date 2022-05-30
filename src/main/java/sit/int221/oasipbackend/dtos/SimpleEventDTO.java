@@ -17,7 +17,7 @@ import java.util.Locale;
 public class SimpleEventDTO {
     private Integer id;
     private String bookingName;
-//    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventStartTime;
     private Integer eventDuration;
     @JsonIgnore
@@ -27,11 +27,5 @@ public class SimpleEventDTO {
         return eventCategory.getEventCategoryName();
     }
 
-    public String getEventStartTime() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-                .withLocale(Locale.UK)
-                .withZone(ZoneId.systemDefault());
-        return formatter.format(eventStartTime);
-    }
 
 }

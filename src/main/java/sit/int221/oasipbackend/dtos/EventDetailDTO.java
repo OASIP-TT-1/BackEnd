@@ -19,23 +19,12 @@ public class EventDetailDTO {
     private Integer id;
     private String bookingName;
     private String bookingEmail;
-//    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventStartTime;
     private Integer eventDuration;
     private String eventNote;
     private Integer eventCategoryId;
     private EventCategory eventCategory;
 
-//    @JsonIgnore
-//    private SimpleEventCategoryDTO eventCategory;
-//    public String getEventCategoryName() {
-//        return eventCategory.getEventCategoryName();
-//    }
-
-    public String getEventStartTime() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
-                .withLocale(Locale.UK)
-                .withZone(ZoneId.systemDefault());
-        return formatter.format(eventStartTime);
-    }
 }
